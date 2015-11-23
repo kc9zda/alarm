@@ -19,14 +19,12 @@ var scid;
 
 function check_alarms() {
 	var now = Date.now();
-	var next = Date.now()+30000;
 	var i = 0;
 
 	document.getElementById('ctime').innerHTML = new Date();
 	while (i < alarms.length) {
-		if (now/1000 >= alarms[i].date.getTime()/1000&& !alarms[i].is_going_off) {
+		if (now >= alarms[i].date.getTime()&& !alarms[i].is_going_off) {
 			set_off_alarm(i);
-			clog(new Date());
 			}
 		i++;
 		}
@@ -39,7 +37,7 @@ function init() {
 
 function render_table() {
 	var table_data = '<tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
-	var end_data = '<tr><td><input type="text" id="nTime"><br><input type="checkbox" id="nTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
+	var end_data = '<tr><td><input type="text" id="nTime"><br><input type="checkbox" id="nTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();" class="btn btn-success">Add</button></td></tr>';
 	var i = 0;
 	var td_ap ='';
 
@@ -47,9 +45,9 @@ function render_table() {
 		a = alarms[i];
 		if (a != undefined)  {
 			if (a.is_going_off) {
-				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');">Snooze</button><button onclick="dismiss_alarm('+i+')">Dismiss</button></td></tr>';
+				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');" class="btn btn-warning">Snooze</button><button onclick="dismiss_alarm('+i+')" class="btn btn-danger">Dismiss</button></td></tr>';
 				} else {
-				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');">Remove</button></td></tr>';
+				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');" class="btn btn-danger">Remove</button></td></tr>';
 				}
 			table_data += td_ap;
 			}
@@ -70,7 +68,7 @@ function set_off_alarm(idx) {
 function add_alarm() {
 	var time = document.getElementById("nTime").value;
 	var desc = document.getElementById("nDesc").value;
-	var tomorrow = document.getElementById("nTomorrow").value=="Tomorrow";
+	var tomorrow = document.getElementById("nTomorrow").checked;
 	var hms = time.split(":");
 	var h = (parseInt(hms[0])||0);
 	var m = (parseInt(hms[1])||0);
@@ -81,7 +79,7 @@ function add_alarm() {
 	now.setHours(h);
 	now.setMinutes(m);
 	now.setSeconds(s);
-	if (tomorrow) now.setTime(now.getTime()+1000*60*60*24);
+	if (tomorrow) { now.setTime(now.getTime()+1000*60*60*24); clog("t"); }
 	a.date = now;
 	a.time = now.toTimeString().split(" ")[0];
 	a.desc = desc;
