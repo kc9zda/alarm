@@ -19,6 +19,7 @@ function check_alarms() {
 	var next = Date.now()+30000;
 	var i = 0;
 
+	document.getElementById('ctime').innerHTML = new Date();
 	while (i < alarms.length) {
 		if (now/1000 >= alarms[i].date.getTime()/1000&& !alarms[i].is_going_off) {
 			set_off_alarm(i);
@@ -128,7 +129,11 @@ function clog(m) {
 <body onload="init();">
 <h2>In-Browser Alarm Clock</h2>
 <hr>
+<span>The current date and time is: </span><span id="ctime"></span>
+<br>
 <table id="tbl">
 </table>
+<hr>
+<a href="https://github.com/kc9zda/alarm">Github</a>
 </body>
 </html>
