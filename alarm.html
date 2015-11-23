@@ -35,14 +35,12 @@ function init() {
 
 function render_table() {
 	var table_data = '<tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
-	var end_data = '<tr><td><input type="text" id="nTime"></td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
+	var end_data = '<tr><td><input type="text" id="nTime"><input type="checkbox" id="nTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
 	var i = 0;
 	var td_ap ='';
 
-	//lalarms = alarms.sort(function(x,y) { return x.date.getTime()-y.date.getTime()});
 	while (i<alarms.length) {
 		a = alarms[i];
-		clog("alarms[i] = "+a+" i = "+i);
 		if (a != undefined)  {
 			if (a.is_going_off) {
 				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');">Snooze</button><button onclick="dismiss_alarm('+i+')">Dismiss</button></td></tr>';
@@ -68,6 +66,7 @@ function set_off_alarm(idx) {
 function add_alarm() {
 	var time = document.getElementById("nTime").value;
 	var desc = document.getElementById("nDesc").value;
+	var tomorrow = document.getElementById("nTomorrow").value=="Tomorrow";
 	var hms = time.split(":");
 	var h = (parseInt(hms[0])||0);
 	var m = (parseInt(hms[1])||0);
@@ -78,6 +77,7 @@ function add_alarm() {
 	now.setHours(h);
 	now.setMinutes(m);
 	now.setSeconds(s);
+	if (tomorrow) now.setTime(now.getTime()+1000*60*60*24);
 	a.date = now;
 	a.time = now.toTimeString().split(" ")[0];
 	a.desc = desc;
