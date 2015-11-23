@@ -91,8 +91,6 @@ function snooze_alarm(i) {
 	a.date = new Date(a.date.getTime()+1000*60*5);
 	a.time = a.date.toTimeString().split(" ")[0];
 	a.is_going_off = false;
-	alarms.pop(i);
-	alarms.push(a);
 	render_table();
 	}
 
@@ -117,7 +115,7 @@ function sync_clock() {
 	clog("clock sync");
 	if (now.getSeconds() == 0 || now.getSeconds() == 30) { 
 		clearInterval(scid);
-		setInterval(check_alarms,30000);
+		setInterval(check_alarms,1000);
 		clog(new Date());
 		}
 	}
