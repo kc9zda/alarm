@@ -1,0 +1,136 @@
+<html>
+<head>
+<title>In-Browser Alarm Clock</title>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+
+.alarm-going-off {
+    color: #FF0000;
+}
+</style>
+<script>
+var alarms = [];
+var scid;
+
+function check_alarms() {
+	var now = Date.now();
+	var next = Date.now()+30000;
+	var i = 0;
+
+	while (i < alarms.length) {
+		if (now/1000 >= alarms[i].date.getTime()/1000&& !alarms[i].is_going_off) {
+			set_off_alarm(i);
+			clog(new Date());
+			}
+		i++;
+		}
+	}
+
+function init() {
+	scid = setInterval(sync_clock,1000);
+	render_table();
+	}
+
+function render_table() {
+	var table_data = '<tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
+	var end_data = '<tr><td><input type="text" id="nTime"></td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
+	var i = 0;
+	var td_ap ='';
+
+	//lalarms = alarms.sort(function(x,y) { return x.date.getTime()-y.date.getTime()});
+	while (i<alarms.length) {
+		a = alarms[i];
+		clog("alarms[i] = "+a+" i = "+i);
+		if (a != undefined)  {
+			if (a.is_going_off) {
+				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');">Snooze</button><button onclick="dismiss_alarm('+i+')">Dismiss</button></td></tr>';
+				} else {
+				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');">Remove</button></td></tr>';
+				}
+			table_data += td_ap;
+			}
+		i++;
+		}
+	table_data += end_data;
+	document.getElementById("tbl").innerHTML = table_data;
+	}
+
+function set_off_alarm(idx) { 
+	var a = alarms[idx];
+
+	a.is_going_off = true;
+	play_alarm();
+	render_table();
+	}
+
+function add_alarm() {
+	var time = document.getElementById("nTime").value;
+	var desc = document.getElementById("nDesc").value;
+	var hms = time.split(":");
+	var h = (parseInt(hms[0])||0);
+	var m = (parseInt(hms[1])||0);
+	var s = (parseInt(hms[2])||0);
+	var now = new Date();
+	var a = {};
+
+	now.setHours(h);
+	now.setMinutes(m);
+	now.setSeconds(s);
+	a.date = now;
+	a.time = now.toTimeString().split(" ")[0];
+	a.desc = desc;
+	alarms.push(a);
+	render_table();
+	}
+
+function snooze_alarm(i) {
+	var a = alarms[i];
+
+	a.date = new Date(a.date.getTime()+1000*60*5);
+	a.time = a.date.toTimeString().split(" ")[0];
+	a.is_going_off = false;
+	alarms.pop(i);
+	alarms.push(a);
+	render_table();
+	}
+
+function dismiss_alarm(i) {
+	alarms.pop(i);
+	render_table();
+	}
+
+function remove_alarm(i) {
+	alarms.pop(i);
+	render_table();
+	}
+
+function play_alarm() {
+	var s = new Audio('alarm.mp3');
+	s.play();
+	}
+
+function sync_clock() {
+	var now = new Date();
+	check_alarms();
+	clog("clock sync");
+	if (now.getSeconds() == 0 || now.getSeconds() == 30) { 
+		clearInterval(scid);
+		setInterval(check_alarms,30000);
+		clog(new Date());
+		}
+	}
+
+function clog(m) {
+	console.log(m);
+	}
+</script>
+</head>
+<body onload="init();">
+<h2>In-Browser Alarm Clock</h2>
+<hr>
+<table id="tbl">
+</table>
+</body>
+</html>
