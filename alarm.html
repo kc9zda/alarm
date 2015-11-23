@@ -2,14 +2,17 @@
 <head>
 <title>In-Browser Alarm Clock</title>
 <style>
-table, th, td {
-    border: 1px solid black;
-}
-
 .alarm-going-off {
     color: #FF0000;
 }
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+    width: intrinsic;
+}
 </style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
 <script>
 var alarms = [];
 var scid;
@@ -36,7 +39,7 @@ function init() {
 
 function render_table() {
 	var table_data = '<tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
-	var end_data = '<tr><td><input type="text" id="nTime"><input type="checkbox" id="nTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
+	var end_data = '<tr><td><input type="text" id="nTime"><br><input type="checkbox" id="nTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="nDesc"></td><td><button onclick="add_alarm();">Add</button></td></tr>';
 	var i = 0;
 	var td_ap ='';
 
@@ -127,13 +130,17 @@ function clog(m) {
 </script>
 </head>
 <body onload="init();">
-<h2>In-Browser Alarm Clock</h2>
+<div class="centered"><h2>In-Browser Alarm Clock</h2></div>
 <hr>
-<span>The current date and time is: </span><span id="ctime"></span>
+<div class="centered"><span>The current date and time is: </span></div>
 <br>
-<table id="tbl">
-</table>
+<div class="centered"><span id="ctime"></span></div>
+<br>
+<div class="centered panel panel-default">
+<div class="panel-heading">Alarms</div>
+<table class="table" id="tbl"></table>
+</div>
 <hr>
-<a href="https://github.com/kc9zda/alarm">Github</a>
+<div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a>
 </body>
 </html>
