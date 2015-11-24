@@ -16,6 +16,7 @@
 <script>
 var alarms = [];
 var scid;
+var storage_allowed;
 
 function check_alarms() {
 	var now = Date.now();
@@ -32,7 +33,16 @@ function check_alarms() {
 
 function init() {
 	scid = setInterval(sync_clock,1000);
+	if (typeof(Storage) == undefined) {
+		storage_allowed = false;
+		} else {
+		storage_allowed = true;
+		if (localStorage.getItem('kc9zda_alarm_presets') == null) {
+			localStorage.setItem('kc9zda_alarm_presets','[]');
+			}
+		}
 	render_table();
+	render_presets();
 	}
 
 function render_table() {
@@ -45,9 +55,9 @@ function render_table() {
 		a = alarms[i];
 		if (a != undefined)  {
 			if (a.is_going_off) {
-				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');" class="btn btn-warning"><span class="glyphicon glyphicon-time"></span>Snooze</button><button onclick="dismiss_alarm('+i+')" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span>Dismiss</button></td></tr>';
+				td_ap = '<tr><td><span class="alarm-going-off">'+a.time+'</span></td><td><span class="alarm-going-off">'+a.desc+'</span></td><td><button onclick="snooze_alarm('+i+');" class="btn btn-warning"><span class="glyphicon glyphicon-time"></span>Snooze</button><button onclick="dismiss_alarm('+i+')" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span>Dismiss</button>'+((a.saved&&storage_allowed)?'':'<button class="btn btn-primary" onclick="save_alarm('+i+');"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>')+'</td></tr>';
 				} else {
-				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span>Remove</button><button onclick="alarm_form('+i+');" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span>Edit</button></td></tr>';
+				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span>Remove</button><button onclick="alarm_form('+i+');" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span>Edit</button>'+((a.saved&&storage_allowed)?'':'<button class="btn btn-primary" onclick="save_alarm('+i+');"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>')+'</td></tr>';
 				}
 			if (a.edit_mode) {
 				td_ap = '<tr><td><input type="text" id="mTime" value="'+a.time+'"><br><input type="checkbox" id="mTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="mDesc" value="'+a.desc+'"></td><td><button onclick="modify_alarm('+i+');" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span>Save Edit</button></td></tr>';
@@ -58,6 +68,8 @@ function render_table() {
 		}
 	table_data += end_data;
 	document.getElementById("tbl").innerHTML = table_data;
+	document.getElementById("msgbox").innerHTML = '';
+	if (!storage_allowed) document.getElementById("msgbox").innerHTML += '<div class="alert alert-warning"><b>Presets Unavailable</b>Local Storage is not allowed by your browser. You will not be able to store preset alarms</div>';
 	}
 
 function set_off_alarm(idx) { 
@@ -155,21 +167,57 @@ function alarm_form(i) {
 	alarms[i].edit_mode = true;
 	render_table();
 	}
+
+function save_alarm(i) {
+	var pa = JSON.parse(localStorage.getItem('kc9zda_alarm_presets'));
+	pa.push({time: alarms[i].time, desc: alarms[i].desc});
+	localStorage.setItem('kc9zda_alarm_presets',JSON.stringify(pa));
+	render_presets();
+	}
+
+function render_presets() {
+	var pk = 'kc9zda_alarm_presets';
+	var jd = localStorage.getItem(pk);
+	var pa = JSON.parse(jd);
+	var i = 0;
+	var pd = '<div class="centered panel panel-default"><div class="panel-heading">Presets</div><table class="table"><tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
+	var ped = '</table></div>';
+
+	while (i < pa.length) {
+		if (pa[i] != undefined) {
+			pd+='<tr><td>'+pa[i].time+'</td><td>'+pa[i].desc+'</td><td>placeholder</td></tr>';
+			}
+		i++;
+		}
+	pd+=ped;
+	document.getElementById("presetbox").innerHTML = pd;
+	}
+
+function reset_presets() {
+	localStorage.setItem('kc9zda_alarm_presets','[]');
+	render_presets();
+	}
 </script>
 </head>
 <body onload="init();">
 <div class="centered"><h2>In-Browser Alarm Clock</h2></div>
 <hr>
+<div class="centered" id="msgbox"></div>
+<br>
 <div class="centered"><span>The current date and time is: </span></div>
 <br>
 <div class="centered"><span id="ctime"></span></div>
+<br>
 <br>
 <div class="centered panel panel-default">
 <div class="panel-heading">Alarms</div>
 <table class="table" id="tbl"></table>
 </div>
+<div class="centered" id="presetbox">
+</div>
 <hr>
 <div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a></div>
-<div class="centered"><span>version: 0.2</span></div>
+<div class="centered"><a href="#" onclick="reset_presets();">Reset Presets</a></div>
+<div class="centered"><span>version: 0.2.1</span></div>
 </body>
 </html>
