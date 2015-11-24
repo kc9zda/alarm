@@ -100,12 +100,12 @@ function snooze_alarm(i) {
 	}
 
 function dismiss_alarm(i) {
-	alarms.pop(i);
+	alarms.splice(i,1);
 	render_table();
 	}
 
 function remove_alarm(i) {
-	alarms.pop(i);
+	alarms.splice(i,1);
 	render_table();
 	}
 
@@ -169,6 +169,7 @@ function alarm_form(i) {
 <table class="table" id="tbl"></table>
 </div>
 <hr>
-<div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a>
+<div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a></div>
+<div class="centered"><span>version: 0.2</span></div>
 </body>
 </html>
