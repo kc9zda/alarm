@@ -60,7 +60,7 @@ function render_table() {
 				td_ap = '<tr><td>'+a.time+'</td><td>'+a.desc+'</td><td><button onclick="remove_alarm('+i+');" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span>Remove</button><button onclick="alarm_form('+i+');" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span>Edit</button>'+((a.saved&&storage_allowed)?'':'<button class="btn btn-primary" onclick="save_alarm('+i+');"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>')+'</td></tr>';
 				}
 			if (a.edit_mode) {
-				td_ap = '<tr><td><input type="text" id="mTime" value="'+a.time+'"><br><input type="checkbox" id="mTomorrow" value="Tomorrow">Tomorrow</td><td><input type="text" id="mDesc" value="'+a.desc+'"></td><td><button onclick="modify_alarm('+i+');" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span>Save Edit</button></td></tr>';
+				td_ap = '<tr><td><input type="text" id="mTime" value="'+a.time+'"><br><input type="checkbox" id="mTomorrow" value="Tomorrow" checked="'+would_be_tomorrow(alarms[i].time)+'">Tomorrow</td><td><input type="text" id="mDesc" value="'+a.desc+'"></td><td><button onclick="modify_alarm('+i+');" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span>Save Edit</button></td></tr>';
 				}
 			table_data += td_ap;
 			}
@@ -176,16 +176,14 @@ function save_alarm(i) {
 	}
 
 function render_presets() {
-	var pk = 'kc9zda_alarm_presets';
-	var jd = localStorage.getItem(pk);
-	var pa = JSON.parse(jd);
+	var pa = JSON.parse(localStorage.getItem('kc9zda_alarm_presets'));
 	var i = 0;
 	var pd = '<div class="centered panel panel-default"><div class="panel-heading">Presets</div><table class="table"><tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
 	var ped = '</table></div>';
 
 	while (i < pa.length) {
 		if (pa[i] != undefined) {
-			pd+='<tr><td>'+pa[i].time+'</td><td>'+pa[i].desc+'</td><td>placeholder</td></tr>';
+			pd+='<tr><td>'+pa[i].time+'</td><td>'+pa[i].desc+'</td><td><button onclick="load_preset('+i+');" class="btn btn-success"><span class="glyphicon glyphicon-floppy-open"></span>Load</button><button class="btn btn-danger" onclick="delete_preset('+i+');"><span class="glyphicon glyphicon-minus"></span>Delete</button></td></tr>';
 			}
 		i++;
 		}
@@ -195,6 +193,36 @@ function render_presets() {
 
 function reset_presets() {
 	localStorage.setItem('kc9zda_alarm_presets','[]');
+	render_presets();
+	}
+
+function load_preset(i) {
+	var pa = JSON.parse(localStorage.getItem('kc9zda_alarm_presets'));
+	document.getElementById("nTime").value = pa[i].time;
+	document.getElementById("nDesc").value = pa[i].desc;
+	document.getElementById("nTomorrow").checked = would_be_tomorrow(pa[i].time);
+	}
+
+function would_be_tomorrow(t) {
+	var hms = t.split(":");
+	var h = (parseInt(hms[0])||0);
+	var m = (parseInt(hms[1])||0);
+	var s = (parseInt(hms[2])||0);
+	var td = new Date();
+	
+	td.setHours(h);
+	td.setMinutes(m);
+	td.setSeconds(s);
+	if (td.getTime() < Date.now()) {
+		return true;
+		}
+	return false;
+	}
+
+function delete_preset(i) {
+	var pa = JSON.parse(localStorage.getItem('kc9zda_alarm_presets'));
+	pa.splice(i,1);
+	localStorage.setItem('kc9zda_alarm_presets',JSON.stringify(pa));
 	render_presets();
 	}
 </script>
@@ -218,6 +246,6 @@ function reset_presets() {
 <hr>
 <div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a></div>
 <div class="centered"><a href="#" onclick="reset_presets();">Reset Presets</a></div>
-<div class="centered"><span>version: 0.2.1</span></div>
+<div class="centered"><span>version: 0.3</span></div>
 </body>
 </html>
