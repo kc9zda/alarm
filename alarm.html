@@ -9,8 +9,12 @@
 .centered {
     margin-left: auto;
     margin-right: auto;
-    width: intrinsic;
+    width: initial;
 }
+
+body { text-align:center; }
+div { display:inline-block; }
+
 </style>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
 <script>
@@ -178,7 +182,7 @@ function save_alarm(i) {
 function render_presets() {
 	var pa = JSON.parse(localStorage.getItem('kc9zda_alarm_presets'));
 	var i = 0;
-	var pd = '<div class="centered panel panel-default"><div class="panel-heading">Presets</div><table class="table"><tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
+	var pd = '<div class="centered panel panel-default"><div class="panel-heading" style="display: block;">Presets</div><table class="table"><tr><th>Time</th><th>Label</th><th>Actions</th></tr>';
 	var ped = '</table></div>';
 
 	while (i < pa.length) {
@@ -236,16 +240,15 @@ function delete_preset(i) {
 <br>
 <div class="centered"><span id="ctime"></span></div>
 <br>
-<br>
 <div class="centered panel panel-default">
-<div class="panel-heading">Alarms</div>
+<div class="panel-heading" style="display: block;">Alarms</div>
 <table class="table" id="tbl"></table>
 </div>
 <div class="centered" id="presetbox">
 </div>
 <hr>
-<div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a></div>
-<div class="centered"><a href="#" onclick="reset_presets();">Reset Presets</a></div>
-<div class="centered"><span>version: 0.3</span></div>
+<div class="centered"><a href="https://github.com/kc9zda/alarm">Github</a></div><br>
+<div class="centered"><a href="#" onclick="reset_presets();">Reset Presets</a></div><br>
+<div class="centered"><span>version: 0.3.1</span></div><br>
 </body>
 </html>
